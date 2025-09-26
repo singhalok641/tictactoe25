@@ -30,7 +30,7 @@ public class GameController {
         game.displayBoard();
     }
 
-    public Player getWinner() {
-        return null;
+    public Player getWinner(Game game) {
+        return game.getWinner();
     }
 }

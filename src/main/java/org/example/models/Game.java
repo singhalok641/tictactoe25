@@ -2,6 +2,10 @@ package org.example.models;
 
 import org.example.exceptions.InvalidBotCountException;
 import org.example.exceptions.InvalidMoveException;
+import org.example.strategies.winningStrategy.ColWinningStrategy;
+import org.example.strategies.winningStrategy.DiagonalWinningStrategy;
+import org.example.strategies.winningStrategy.RowWinningStrategy;
+import org.example.strategies.winningStrategy.WinningStrategy;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,13 +18,21 @@ public class Game {
     private Player winner;
     private int nextPlayerMoveIndex;
 
+    private List<WinningStrategy> winningStrategies;
+
     private Game(int dimension,
-                List<Player> players) {
+                List<Player> players,
+                 List<WinningStrategy> winningStrategies) {
         this.board = new Board(dimension);
         this.players = players;
         this.gameState = GameState.IN_PROGRESS;
         this.moves = new ArrayList<>();
         this.nextPlayerMoveIndex = 0;
+        this.winningStrategies = winningStrategies;
+    }
+
+    public Player getWinner() {
+        return winner;
     }
 
     public GameState getGameState() {
@@ -47,7 +59,7 @@ public class Game {
 
         // Game will validate the move
         if(!validateMove(move)) {
-            throw new InvalidMoveException("Invalid Move!");
+//            System.out.println("");
         }
 
         // Make the move on the board
@@ -67,7 +79,23 @@ public class Game {
         moves.add(move); // And then we add it to the movesList
 
         // check winner
+        if(checkWinner(move)) {
+            gameState = GameState.ENDED;
+            winner = currentPlayer;
+        } else if(moves.size() == board.getDimension() * board.getDimension()) {
+            // DRAW
+            gameState = GameState.DRAW;
+        }
+    }
 
+    private boolean checkWinner(Move move) {
+        for (WinningStrategy winningStrategy: winningStrategies) {
+            if (winningStrategy.checkWinner(move, this.board)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private boolean validateMove(Move move) {
@@ -123,6 +151,7 @@ public class Game {
         }
 
         private void validatePlayerCounts() {
+
             // TODO:: Complete this exception
             // players count == dimension - 1
             // Complete first the requirements that are a must
@@ -144,10 +173,38 @@ public class Game {
         public Game build() throws InvalidBotCountException {
             // validations
             validateGame();
+
+            // Currently we are hardcoding these
+            List<WinningStrategy> winningStrategies1 = new ArrayList<>();
+            winningStrategies1.add(new RowWinningStrategy());
+            winningStrategies1.add(new ColWinningStrategy());
+            winningStrategies1.add(new DiagonalWinningStrategy());
+
             return new Game(
                    dimension,
-                   players
+                   players,
+                   winningStrategies1
             );
         }
     }
 }
+
+/*
+
+<<GameRule>> -> rule()
+
+RowWinningRule -> rowWin()
+
+ColAndRowWinning -> rowWin() + colWin()
+
+<<GameRule>> -> rule()
+
+RowWinningRule -> rule()
+
+ColWinningRule -> rule()
+
+StandardTTT -> List<> -> RowWinningRule
+ComplexTT -> List<> -> RowWinningRule + ColWinningRule
+SuperComplexTT -> List<> -> DiagonalWinningRule
+
+ */

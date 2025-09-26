@@ -10,12 +10,12 @@ import java.util.List;
 
 public class Main {
     public static void main(String[] args) throws InvalidBotCountException, InvalidMoveException {
-        System.out.println("Hello world!");
+        System.out.println("=========== Welcome to Tic Tac Toe =========");
 
+        // Gateway to talk to the tic tac toe service
         GameController gameController = new GameController();
 
         int dimension = 3;
-
         List<Player> players = new ArrayList<>();
         players.add(new Player(
                 "Abhishek",
@@ -36,8 +36,17 @@ public class Main {
             gameController.makeMove(game);
         }
 
+
+
         // check if win or draw
         // if win -> display the winner
+        if(gameController.getGameState(game) == GameState.ENDED) {
+            gameController.displayBoard(game);
+            System.out.println("The winner is: " + gameController.getWinner(game).getName());
+        } else {
+            // DRAW
+            System.out.println("It's a DRAW. No one won the game. Play again? ");
+        }
 
 
         // startGame
