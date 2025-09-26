@@ -44,7 +44,7 @@ public class Game {
     }
 
     public void displayBoard() {
-        this.board.displayBoard();
+        this.board.displayBoard(players);
     }
 
     public void makeMove() throws InvalidMoveException {
@@ -58,12 +58,18 @@ public class Game {
         Move move = currentPlayer.makeMove(board);
 
         // Game will validate the move
-        if(!validateMove(move)) {
-//            System.out.println("");
+        if(!isMoveValid(move)) {
+            System.out.println("This is not a valid cell");
+            return;
+        }
+
+        Cell cell = move.getCell();
+        if(!cell.isEmpty()) {
+            System.out.println("This cell is not empty. Please try another cell");
+            return;
         }
 
         // Make the move on the board
-        Cell cell = move.getCell();
         cell.setCellState(CellState.FILLED);
         cell.setPlayer(currentPlayer);
 
@@ -98,20 +104,41 @@ public class Game {
         return false;
     }
 
-    private boolean validateMove(Move move) {
+    private boolean isMoveValid(Move move) {
         int row = move.getCell().getRow();
         int col = move.getCell().getCol();
         // dimension == 3
         // rows = 0, 1, 2
         // cols = 0, 1, 2
-        if(row < 0 ||
-                row >= this.board.getDimension() ||
-                col < 0 ||
-                col >= this.board.getDimension()) {
-            return false;
+        return row >= 0 &&
+                row < this.board.getDimension() &&
+                col >= 0 &&
+                col < this.board.getDimension();
+    }
+
+    public void undo() {
+        // implement undo
+        // Check if we can even undo?
+        if(moves.isEmpty()) {
+            System.out.println("No moves to undo");
+            return;
         }
 
-        return board.getBoard().get(row).get(col).isEmpty();
+        // Get the last move
+        Move lastMove = moves.remove(moves.size()-1);
+
+        // Reset the cell on the board
+        Cell cell = lastMove.getCell();
+        cell.setCellState(CellState.EMPTY);
+        cell.setPlayer(null);
+
+        // Update the next player index to the previous player
+        nextPlayerMoveIndex = (nextPlayerMoveIndex - 1 + players.size()) % players.size();
+
+        System.out.println("Last move is undone. It's now " + players.get(nextPlayerMoveIndex).getName() + "'s turn");
+
+        // 0 1 2 3 4 5 => 3 + 6 = 9 % 6 = 3
+        // Alok -> Shikha
     }
 
     public static class Builder {

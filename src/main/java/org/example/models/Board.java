@@ -36,17 +36,31 @@ public class Board {
         this.board = board;
     }
 
-    public void displayBoard() {
-        for (List<Cell> cells: board) {
-            for (Cell cell: cells) {
-                if(cell.isEmpty()) {
-                    System.out.print("|   |");
+    public void displayBoard(List<Player> players) {
+        for (List<Cell> row : board) {
+            for (Cell cell : row) {
+                if (cell.getCellState() == CellState.EMPTY) {
+                    System.out.print("[ ] ");
                 } else {
-                    System.out.print("| " + cell.getPlayer().getSymbol().getaChar() + " |");
+                    String color = getPlayerColor(cell.getPlayer(), players);
+                    System.out.print(color + "[" + cell.getPlayer().getSymbol().getaChar() + "]\u001B[0m ");
                 }
             }
             System.out.println();
         }
     }
+
+    private String getPlayerColor(Player player, List<Player> players) {
+        int playerIndex = players.indexOf(player);
+        switch (playerIndex) {
+            case 0: return "\u001B[31m"; // Red for Player 1
+            case 1: return "\u001B[34m"; // Blue for Player 2
+            case 2: return "\u001B[32m"; // Green for Player 3
+            case 3: return "\u001B[33m"; // Yellow for Player 4
+            default: return "\u001B[37m"; // White for others
+        }
+    }
+
+
 
 }
