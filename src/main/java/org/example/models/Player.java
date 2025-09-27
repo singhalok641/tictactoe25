@@ -46,6 +46,7 @@ public class Player {
         System.out.println("Please enter the col number:");
         int col = scanner.nextInt();
 
+
         Cell cell = board.getBoard().get(row).get(col);
 
         return new Move(cell, this);

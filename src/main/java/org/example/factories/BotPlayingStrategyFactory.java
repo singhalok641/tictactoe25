@@ -1,6 +1,5 @@
 package org.example.factories;
 
-import org.example.exceptions.InvalidBotDifficultyException;
 import org.example.models.BotDifficultyLevel;
 import org.example.strategies.botPlayingStrategy.BotPlayingStrategy;
 import org.example.strategies.botPlayingStrategy.EasyBotPlayingStrategy;

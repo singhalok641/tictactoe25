@@ -44,7 +44,7 @@ public class Game {
     }
 
     public void displayBoard() {
-        this.board.displayBoard(players);
+        this.board.displayBoard(new PlayerColorManager(players));
     }
 
     public void makeMove() throws InvalidMoveException {
